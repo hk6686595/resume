@@ -33,7 +33,26 @@ python -m http.server 4173
 
 ## 免费部署到 GitHub Pages（推荐）
 
-### 方式一：网页操作（无需命令行，推荐新手）
+### 方式一：一键脚本全自动部署（推荐，最快）
+
+本仓库已内置 `deploy.ps1`，登录 GitHub 后运行一条命令即可完成
+「建仓库 → 推送 → 启用 Pages」全部步骤：
+
+1. 安装 GitHub CLI（已由我安装到本机 `%LOCALAPPDATA%\Programs\gh`；如换电脑：
+   https://cli.github.com 下载安装）
+2. 登录（仅首次需要）：`gh auth login`（选 GitHub.com → HTTPS → 浏览器登录）
+3. 在本目录运行：
+
+   ```powershell
+   .\deploy.ps1
+   ```
+
+   脚本会显示你的线上地址：`https://<你的用户名>.github.io/resume/`
+
+> 说明：脚本默认仓库名为 `resume`，可用 `-RepoName` 修改；
+> 若没有 gh 或未登录，脚本会提示你改用手动模式。
+
+### 方式二：网页操作（无需命令行）
 
 1. 打开 https://github.com 注册 / 登录账号
 2. 点击右上角 **+** → **New repository**
@@ -48,26 +67,17 @@ python -m http.server 4173
 5. 等待 1~2 分钟，页面顶部会显示你的网址：
    `https://<你的用户名>.github.io/resume/`
 
-### 方式二：命令行（推荐，以后更新方便）
+### 方式三：手动命令行推送（适合已有仓库）
 
 ```bash
 cd 个人简历网站
-git init
-git add .
-git commit -m "init: personal resume site"
+# 本仓库的 git 已初始化并提交完成（分支 main），可直接推送：
 
-# 已有 GitHub 账号，且已安装并登录 GitHub CLI 时：
-gh repo create resume --public --source=. --push
-
-# 或手动方式（先在网页上建好空仓库后）：
-git branch -M main
+# 先在网页上建好空仓库，然后：
 git remote add origin https://github.com/<你的用户名>/resume.git
 git push -u origin main
+# 再按「方式二」第 4 步在 Settings -> Pages 里开启部署
 ```
-
-> 💡 本仓库已包含一键部署脚本 `deploy.ps1`：先在 GitHub 网页上建好空仓库，
-> 再运行 `.\deploy.ps1 -RepoUrl "https://github.com/<你的用户名>/resume.git"` 即可推送。
-> 本仓库的 git 仓库已初始化并提交完成（分支 main），无需重复 init/commit。
 
 之后每次修改内容，重复：
 
