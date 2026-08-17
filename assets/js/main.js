@@ -117,4 +117,48 @@
   document.querySelectorAll(".reveal").forEach(function (el) {
     io.observe(el);
   });
+
+  /* ---------- 项目视频弹窗 ---------- */
+  var videoModal = document.getElementById("videoModal");
+  var videoFrame = document.getElementById("videoFrame");
+
+  function openVideo(id, start) {
+    var src = "https://www.youtube.com/embed/" + id + "?autoplay=1";
+    if (start > 0) src += "&start=" + start;
+    videoFrame.src = src;
+    videoModal.classList.add("open");
+    videoModal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeVideo() {
+    videoFrame.src = "";
+    videoModal.classList.remove("open");
+    videoModal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+
+  document.querySelectorAll(".video-cover").forEach(function (cover) {
+    function launch(e) {
+      e.preventDefault();
+      var id = cover.getAttribute("data-video");
+      var start = parseInt(cover.getAttribute("data-start"), 10) || 0;
+      if (id) openVideo(id, start);
+    }
+    cover.addEventListener("click", launch);
+    cover.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        launch(e);
+      }
+    });
+  });
+
+  document.querySelectorAll("[data-close]").forEach(function (el) {
+    el.addEventListener("click", closeVideo);
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closeVideo();
+  });
 })();
