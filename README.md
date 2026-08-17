@@ -65,6 +65,10 @@ git remote add origin https://github.com/<你的用户名>/resume.git
 git push -u origin main
 ```
 
+> 💡 本仓库已包含一键部署脚本 `deploy.ps1`：先在 GitHub 网页上建好空仓库，
+> 再运行 `.\deploy.ps1 -RepoUrl "https://github.com/<你的用户名>/resume.git"` 即可推送。
+> 本仓库的 git 仓库已初始化并提交完成（分支 main），无需重复 init/commit。
+
 之后每次修改内容，重复：
 
 ```bash
