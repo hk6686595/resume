@@ -358,12 +358,18 @@
         </div>
         <p class="project-desc">
           设计并开发的一款在线中国象棋对战平台，采用 Node.js + WPF 技术栈，覆盖从服务端到客户端的完整链路。
-          服务端基于 Node.js 实现房间管理、实时对局逻辑与消息转发，保证对局状态同步的及时性与一致性；
-          客户端基于 WPF（C#）实现棋盘渲染、走子交互与对局状态实时刷新，支持双人在线对战与走子规则校验。
+          服务端基于 Node.js 实现房间管理、实时对局逻辑与消息转发，并通过 cpolar 内网穿透将服务映射到公网，
+          网外玩家也可随时联网对战；客户端基于 WPF（C#）实现棋盘渲染、走子交互与对局状态实时刷新，
+          支持双人在线对战与走子规则校验，并接入开源 AI 引擎 eleeye 提供人机对战能力。
           开发过程中配合使用 Cursor 等 AI 工具辅助编码，显著提升开发效率。
         </p>
+        <video class="project-video" controls preload="none" playsinline>
+          <source src="assets/videos/中国象棋演示.mp4" type="video/mp4" />
+          您的浏览器不支持视频播放。
+        </video>
         <div class="chips">
           <span>Node.js</span><span>WPF / C#</span><span>WebSocket</span>
+          <span>cpolar 内网穿透</span><span>eleeye AI 引擎</span>
           <span>实时对战</span><span>棋规校验</span><span>AI 辅助开发</span>
         </div>
       </div>
