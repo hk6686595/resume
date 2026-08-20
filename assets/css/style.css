@@ -355,6 +355,8 @@ ul { list-style: none; }
 .project-type { font-size: 12.5px; color: var(--accent); font-weight: 600; }
 .project-desc { font-size: 14.5px; color: #475569; flex: 1; }
 
+.project-card.featured { max-width: 860px; margin: 0 auto; }
+
 /* ---------- 项目演示视频（本地文件） ---------- */
 
 .project-video {
