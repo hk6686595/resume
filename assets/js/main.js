@@ -117,4 +117,14 @@
   document.querySelectorAll(".reveal").forEach(function (el) {
     io.observe(el);
   });
+
+  /* ---------- 项目演示视频：同时只允许播放一个 ---------- */
+  var videos = document.querySelectorAll(".project-video");
+  videos.forEach(function (video) {
+    video.addEventListener("play", function () {
+      videos.forEach(function (other) {
+        if (other !== video && !other.paused) other.pause();
+      });
+    });
+  });
 })();
