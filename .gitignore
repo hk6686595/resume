@@ -1,0 +1,10 @@
+# 本地 AI 提交工具配置（含密钥，禁止提交）
+.git-ai-commit.toml
+
+# 本地环境与编辑器
+.env
+.env.local
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
