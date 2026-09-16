@@ -8,11 +8,21 @@
   var navToggle = document.getElementById("navToggle");
   var siteNav = document.getElementById("siteNav");
   var backTop = document.getElementById("backTop");
-  var printBtn = document.getElementById("printBtn");
   var yearEl = document.getElementById("year");
 
   /* ---------- 页脚年份 ---------- */
   if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  /* ---------- 滚动进度条 ---------- */
+  var progress = document.createElement("div");
+  progress.className = "scroll-progress";
+  progress.setAttribute("aria-hidden", "true");
+  document.body.appendChild(progress);
+
+  function updateProgress() {
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    progress.style.width = (max > 0 ? (window.scrollY / max) * 100 : 0) + "%";
+  }
 
   /* ---------- 顶部导航：滚动阴影 ---------- */
   function onScroll() {
@@ -21,9 +31,39 @@
 
     if (window.scrollY > 480) backTop.classList.add("show");
     else backTop.classList.remove("show");
+
+    updateProgress();
   }
   window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", updateProgress, { passive: true });
   onScroll();
+
+  /* ---------- Hero 数字滚动 ---------- */
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var statEls = document.querySelectorAll(".stat-card b");
+  function runCounters() {
+    statEls.forEach(function (el) {
+      var match = el.textContent.trim().match(/^(\d+)(.*)$/);
+      if (!match) return;
+      var target = parseInt(match[1], 10);
+      var suffix = match[2] || "";
+      if (reduceMotion) {
+        el.textContent = target + suffix;
+        return;
+      }
+      var startTime = null;
+      var duration = 1200;
+      function step(now) {
+        if (startTime === null) startTime = now;
+        var p = Math.min((now - startTime) / duration, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(target * eased) + suffix;
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  }
+  if (statEls.length) setTimeout(runCounters, 400);
 
   /* ---------- 移动端菜单 ---------- */
   navToggle.addEventListener("click", function () {
@@ -46,13 +86,6 @@
   backTop.addEventListener("click", function () {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
-
-  /* ---------- 打印 / 保存 PDF ---------- */
-  if (printBtn) {
-    printBtn.addEventListener("click", function () {
-      window.print();
-    });
-  }
 
   /* 打印前确保技能条按等级显示（避免未滚动到技能区时宽度为 0） */
   function fillAllBars() {
@@ -96,19 +129,41 @@
   updateSpy();
 
   /* ---------- 入场动画 + 技能条 ---------- */
+  function staggerDelay(el) {
+    var parent = el.parentElement;
+    if (!parent || !parent.classList.contains("cards-grid")) return 0;
+    var items = Array.prototype.filter.call(parent.children, function (child) {
+      return child.classList.contains("reveal");
+    });
+    var index = items.indexOf(el);
+    if (index < 0) return 0;
+    return Math.min(index * 0.06, 0.84);
+  }
+
   var io = new IntersectionObserver(
     function (entries) {
       entries.forEach(function (entry) {
         if (!entry.isIntersecting) return;
-        entry.target.classList.add("in-view");
+        var el = entry.target;
+
+        /* 网格错峰入场：延迟瞬时注入，动画结束后清除，避免影响悬浮效果 */
+        var delay = reduceMotion ? 0 : staggerDelay(el);
+        if (delay > 0) {
+          el.style.transitionDelay = delay + "s";
+          window.setTimeout(function () {
+            el.style.transitionDelay = "";
+          }, delay * 1000 + 800);
+        }
+
+        el.classList.add("in-view");
 
         /* 技能条宽度动画 */
-        entry.target.querySelectorAll(".bar i[data-level]").forEach(function (bar) {
+        el.querySelectorAll(".bar i[data-level]").forEach(function (bar) {
           var level = parseInt(bar.getAttribute("data-level"), 10);
           if (!isNaN(level)) bar.style.width = level + "%";
         });
 
-        io.unobserve(entry.target);
+        io.unobserve(el);
       });
     },
     { threshold: 0.15 }

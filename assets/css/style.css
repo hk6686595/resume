@@ -197,10 +197,12 @@ ul { list-style: none; }
   border-radius: 50%;
   filter: blur(70px);
   opacity: 0.55;
+  animation: blobFloat 18s ease-in-out infinite;
+  will-change: transform;
 }
-.blob-1 { width: 420px; height: 420px; background: #bfdbfe; top: -120px; right: -80px; }
-.blob-2 { width: 320px; height: 320px; background: #a5f3fc; bottom: -120px; left: -60px; }
-.blob-3 { width: 220px; height: 220px; background: #c7d2fe; top: 40%; left: 55%; }
+.blob-1 { width: 420px; height: 420px; background: #bfdbfe; top: -120px; right: -80px; animation-delay: 0s; }
+.blob-2 { width: 320px; height: 320px; background: #a5f3fc; bottom: -120px; left: -60px; animation-delay: -6s; }
+.blob-3 { width: 220px; height: 220px; background: #c7d2fe; top: 40%; left: 55%; animation-delay: -12s; }
 
 .hero-inner {
   position: relative;
@@ -356,6 +358,20 @@ ul { list-style: none; }
 .project-desc { font-size: 14.5px; color: #475569; flex: 1; }
 
 .project-card.featured { max-width: 860px; margin: 0 auto; }
+
+/* 工具区采用多列瀑布流：卡片按内容高度紧密排列，消除描述长短不一造成的留白 */
+#tools .cards-grid {
+  display: block;
+  column-count: 3;
+  column-gap: 22px;
+}
+#tools .cards-grid > .project-card {
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  margin-bottom: 22px;
+}
+#tools .project-desc { flex: none; }
 
 /* ---------- 项目演示视频（本地文件） ---------- */
 
@@ -518,24 +534,126 @@ ul { list-style: none; }
 }
 .reveal.in-view { opacity: 1; transform: translateY(0); }
 
-/* ---------- 打印样式（保存 PDF 用） ---------- */
+/* ---------- 动画增强 ---------- */
 
-@media print {
-  .site-header, .site-footer, .back-top, .hero-actions, .nav-toggle { display: none !important; }
-  body { background: #fff; }
-  .section { padding: 24px 0; }
-  .section-alt { background: #fff; border: none; }
-  .card, .stat-card, .about-points, .contact-item { box-shadow: none; border-color: #ddd; }
-  .card:hover { transform: none; }
-  .hero { background: #fff; padding: 24px 0; }
-  .blob { display: none; }
-  .reveal { opacity: 1; transform: none; }
-  .hero-inner { grid-template-columns: 1fr; }
-  .hero-stats { display: none; }
-  a { color: var(--text); }
-  .contact-item { break-inside: avoid; }
-  .project-card, .exp-card, .edu-item { break-inside: avoid; }
-  .project-card video { display: none !important; }
+@keyframes blobFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(26px, -30px) scale(1.08); }
+  66% { transform: translate(-22px, 24px) scale(0.94); }
+}
+@keyframes popIn {
+  0% { opacity: 0; transform: translateY(16px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes shineSweep {
+  0% { left: -130%; }
+  55%, 100% { left: 140%; }
+}
+@keyframes brandPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.35); }
+}
+@keyframes kickerFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Hero 分层入场 */
+.hero-text > .reveal:nth-child(1) { transition-delay: 0.04s; }
+.hero-text > .reveal:nth-child(2) { transition-delay: 0.12s; }
+.hero-text > .reveal:nth-child(3) { transition-delay: 0.20s; }
+.hero-text > .reveal:nth-child(4) { transition-delay: 0.28s; }
+.hero-text > .reveal:nth-child(5) { transition-delay: 0.36s; }
+.hero-text > .reveal:nth-child(6) { transition-delay: 0.44s; }
+
+/* 数字卡片弹入 + 悬浮 */
+.hero-stats .stat-card {
+  animation: popIn 0.65s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hero-stats .stat-card:nth-child(1) { animation-delay: 0.40s; }
+.hero-stats .stat-card:nth-child(2) { animation-delay: 0.48s; }
+.hero-stats .stat-card:nth-child(3) { animation-delay: 0.56s; }
+.hero-stats .stat-card:nth-child(4) { animation-delay: 0.64s; }
+.hero-stats .stat-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-hover); }
+
+/* 品牌点脉冲 */
+.brand-dot { display: inline-block; animation: brandPulse 2.4s ease-in-out infinite; }
+
+/* section 小标签轻微浮动 */
+.section-head .kicker { animation: kickerFloat 4s ease-in-out infinite; }
+
+/* 网格错峰入场（延迟由 JS 注入，避免影响悬浮过渡） */
+
+/* 项目/工具图标微交互 */
+.project-icon {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s ease;
+}
+.card:hover .project-icon { transform: scale(1.1) rotate(-6deg); background: #dbeafe; }
+
+/* 标签悬浮 */
+.chips span, .chip {
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.chips span:hover, .chip:hover {
+  transform: translateY(-2px);
+  background: var(--accent-soft);
+  border-color: #bfdbfe;
+  color: var(--accent);
+}
+
+/* Hero 能力标签悬浮 */
+.hero-tags li { transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; }
+.hero-tags li:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+}
+
+/* 主按钮流光 */
+.btn-primary { position: relative; overflow: hidden; }
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -130%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  transform: skewX(-20deg);
+  animation: shineSweep 3.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* 联系卡片图标放大 */
+.contact-icon { transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+.contact-item:hover .contact-icon { transform: scale(1.12) rotate(4deg); }
+
+/* 滚动进度条 */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+  z-index: 200;
+  transition: width 0.1s linear;
+}
+
+/* 回到顶部按钮悬浮旋转 */
+.back-top:hover { transform: translateY(-3px) scale(1.06); }
+
+/* 无障碍：尊重系统减少动效设置 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1 !important; transform: none !important; }
 }
 
 /* ---------- 响应式 ---------- */
@@ -544,6 +662,7 @@ ul { list-style: none; }
   .hero-inner { grid-template-columns: 1fr; gap: 40px; }
   .about-grid { grid-template-columns: 1fr; gap: 32px; }
   .skills-grid { grid-template-columns: 1fr; }
+  #tools .cards-grid { column-count: 2; }
   .section { padding: 64px 0; }
   .hero-name { font-size: 44px; }
 }
@@ -580,6 +699,7 @@ ul { list-style: none; }
   .hero-role { font-size: 17px; }
   .section-head h2 { font-size: 26px; }
   .cards-grid { grid-template-columns: 1fr; }
+  #tools .cards-grid { column-count: 1; }
   .exp-head { flex-direction: column; }
   .contact-grid { grid-template-columns: 1fr; }
 }
