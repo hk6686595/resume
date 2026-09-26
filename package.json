@@ -1,0 +1,16 @@
+{
+  "name": "resume-bun",
+  "version": "1.0.0",
+  "description": "崔伊超 · 个人简历网站（Bun SSR）",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "start": "bun run src/index.ts",
+    "build": "bun run src/build.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.0",
+    "typescript": "^5.7.0"
+  }
+}
